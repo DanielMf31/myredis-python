@@ -1,0 +1,43 @@
+// myredis — architecture: modules and data flow
+digraph architecture {
+  rankdir=LR;
+  bgcolor="white";
+  pad=0.3;
+  fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11,
+        color="#455a64", penwidth=1.2, margin="0.18,0.10"];
+  edge [fontname="Helvetica", fontsize=9, color="#78909c"];
+
+  client [label="redis-cli / redis-py", fillcolor="#eceff1"];
+
+  subgraph cluster_myredis {
+    label="myredis";
+    labeljust="l";
+    fontname="Helvetica";
+    fontsize=14;
+    style="rounded";
+    color="#b0bec5";
+    bgcolor="#fbfbfb";
+
+    server   [label="server.py\n(asyncio TCP)",           fillcolor="#e3f2fd"];
+    parser   [label="protocol.py\nparser  (RESP → args)",  fillcolor="#e8f5e9"];
+    registry [label="commands.py\nregistry + dispatch",    fillcolor="#fff3e0"];
+    encoder  [label="protocol.py\nencoder (value → RESP)", fillcolor="#e8f5e9"];
+    storage  [label="storage.py\nin-memory store",         shape=cylinder, fillcolor="#fce4ec"];
+    expir    [label="expiration.py\nlazy + active",        fillcolor="#f3e5f5"];
+    persist  [label="persistence.py\nRDB snapshot",        fillcolor="#f3e5f5"];
+  }
+
+  disk [label="dump.rdb", shape=note, fillcolor="#eceff1"];
+
+  client   -> server   [label="RESP2 / TCP"];
+  server   -> parser   [label="feed bytes"];
+  parser   -> registry [label="args"];
+  registry -> storage  [label="get / set / …"];
+  registry -> encoder  [label="result"];
+  encoder  -> client   [label="RESP2 reply"];
+
+  expir    -> storage  [dir=both, style=dashed, label="expire"];
+  persist  -> storage  [dir=both, style=dashed];
+  persist  -> disk     [dir=both, style=dashed, label="save / load"];
+}

@@ -1,0 +1,22 @@
+// myredis — incremental build: nine vertical slices, each one runnable and tested
+digraph phases {
+  rankdir=LR;
+  bgcolor="white";
+  pad=0.3;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        fillcolor="#e3f2fd", color="#455a64", penwidth=1.2, margin="0.16,0.12"];
+  edge [color="#78909c", arrowsize=0.7];
+
+  p0 [label="0\nPING\nTCP + RESP2"];
+  p1 [label="1\nStrings\nSET / GET / DEL"];
+  p2 [label="2\nExpiration\nEXPIRE / TTL"];
+  p3 [label="3\nCounters\nINCR / DECR"];
+  p4 [label="4\nLists\nLPUSH / LRANGE"];
+  p5 [label="5\nHashes\nHSET / HGET"];
+  p6 [label="6\nPersistence\nRDB snapshot"];
+  p7 [label="7\nEviction\nLRU / maxmemory"];
+  p8 [label="8\nTooling\nINFO / KEYS"];
+  p9 [label="9\nReplication\nmaster–replica", fillcolor="#f3e5f5"];
+
+  p0 -> p1 -> p2 -> p3 -> p4 -> p5 -> p6 -> p7 -> p8 -> p9;
+}

@@ -1,0 +1,44 @@
+// myredis — key expiration: lazy (on access) + active (background sweep)
+digraph expiration {
+  rankdir=TB;
+  bgcolor="white";
+  pad=0.3;
+  compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        color="#455a64", penwidth=1.2, margin="0.16,0.10"];
+  edge [fontname="Helvetica", fontsize=9, color="#78909c"];
+
+  key [label="key with a TTL", shape=cylinder, fillcolor="#fce4ec"];
+
+  subgraph cluster_lazy {
+    label="Lazy — on access";
+    labeljust="l"; fontname="Helvetica"; fontsize=12;
+    style="rounded"; color="#b0bec5"; bgcolor="#fbfbfb";
+
+    access [label="GET / TTL / …", fillcolor="#e3f2fd"];
+    lcheck [label="expired?", shape=diamond, fillcolor="#fff3e0"];
+    ldel   [label="delete\nreturn nil", fillcolor="#ffebee"];
+    lret   [label="return value", fillcolor="#e8f5e9"];
+
+    access -> lcheck;
+    lcheck -> ldel [label="yes"];
+    lcheck -> lret [label="no"];
+  }
+
+  subgraph cluster_active {
+    label="Active — background sweep (every 1s)";
+    labeljust="l"; fontname="Helvetica"; fontsize=12;
+    style="rounded"; color="#b0bec5"; bgcolor="#fbfbfb";
+
+    tick   [label="timer tick", fillcolor="#e3f2fd"];
+    sample [label="sample 20 keys\nthat have a TTL", fillcolor="#fff3e0"];
+    adel   [label="delete the\nexpired ones", fillcolor="#ffebee"];
+    again  [label="> 25%\nexpired?", shape=diamond, fillcolor="#fff3e0"];
+
+    tick -> sample -> adel -> again;
+    again -> sample [label="yes, repeat"];
+  }
+
+  key -> access [style=dashed, label="touched"];
+  key -> sample [style=dashed, label="sampled"];
+}

@@ -1,0 +1,19 @@
+// myredis — lifecycle of a single command (SET foo bar)
+digraph lifecycle {
+  rankdir=LR;
+  bgcolor="white";
+  pad=0.3;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        color="#455a64", penwidth=1.2, margin="0.16,0.10"];
+  edge [color="#78909c", arrowsize=0.8];
+
+  c1 [label="1. Client sends\n*3 $3 SET $3 foo $3 bar", fillcolor="#eceff1"];
+  c2 [label="2. server.py\nreads bytes off the socket", fillcolor="#e3f2fd"];
+  c3 [label="3. parser\n[SET, foo, bar]", fillcolor="#e8f5e9"];
+  c4 [label="4. registry\ndispatch SET", fillcolor="#fff3e0"];
+  c5 [label="5. cmd_set\nstorage.set(foo, bar)", fillcolor="#fff3e0"];
+  c6 [label="6. encoder\n\"OK\"  →  +OK", fillcolor="#e8f5e9"];
+  c7 [label="7. Client receives\n+OK", fillcolor="#eceff1"];
+
+  c1 -> c2 -> c3 -> c4 -> c5 -> c6 -> c7;
+}
