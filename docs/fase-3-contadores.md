@@ -76,7 +76,7 @@ def test_incr_no_entero(redis_client):
 
 ## 4. Verificación
 ```bash
-pytest tests/ -v
+pytest tests/ -
 redis-cli -p 6380 INCR visitas     # -> (integer) 1
 redis-cli -p 6380 INCRBY visitas 9 # -> (integer) 10
 ```

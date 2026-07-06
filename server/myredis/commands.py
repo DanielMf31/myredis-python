@@ -5,7 +5,7 @@ from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
 import time
 
-CommandHandler = Callable[[list], Awaitable[any]]
+CommandHandler = Callable[[list], Awaitable[Any]]
 
 def _to_bytes(value: Any) -> bytes:
     if isinstance(value, bytes):
@@ -35,6 +35,10 @@ class CommandRegistry:
         self.register("EXPIRE", self.cmd_expire)
         self.register("TTL", self.cmd_ttl)
         self.register("PERSIST", self.cmd_persist)
+        self.register("INCR", self.cmd_incr)
+        self.register("DECR", self.cmd_decr)
+        self.register("INCRBY", self.cmd_incrby)
+        self.register("DECRBY", self.cmd_decrby)
 
     async def execute(self, name: str, args: list) -> Any:
         handler = self._handlers.get(name)
@@ -164,3 +168,37 @@ class CommandRegistry:
             return 0
         self.storage.remove_expiration(key)
         return 1
+    
+    async def _incr_by(self, key: bytes, delta: int) -> int:
+        self.expiration.check_and_expire(key)
+        current = self.storage.get(key)
+        if current is None:
+            value = 0
+        else:
+            if not isinstance(current, bytes):
+                raise ValueError("WRONGTYPE Operation agains a key holding the wrong kind of value")
+            try:
+                value = int(current)
+            except ValueError:
+                raise ValueError("ERR value is not an integer or out of range")
+        value += delta
+        self.storage.set(key, str(value).encode())
+        return value
+    
+    async def cmd_incr(self, args: list) -> int:
+        self._check_argc(args, 1, "incr")
+        return await self._incr_by(_to_bytes(args[0]), 1)
+    
+    async def cmd_decr(self, args: list) -> int:
+        self._check_argc(args, 1, "decr")
+        return await self._incr_by(_to_bytes(args[0]), -1)
+    
+    async def cmd_incrby(self, args: list) -> int:
+        self._check_argc(args, 2, "incrby")
+        return await self._incr_by(_to_bytes(args[0]), int(_to_bytes(args[1])))
+    
+    async def cmd_decrby(self, args: list) -> int:
+        self._check_argc(args, 2, "decrby")
+        return await self._incr_by(_to_bytes(args[0]), -int(_to_bytes(args[1])))
+    
+    

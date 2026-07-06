@@ -36,6 +36,23 @@ def test_set_ex(redis_client):
     redis_client.set("k", "v", ex=100)
     assert 0 < redis_client.ttl("k") <= 100
 
+def test_incr_desde_cero(redis_client):
+    assert redis_client.incr("c") == 1
+    assert redis_client.incr("c") == 2
+
+def test_incrby_decrby(redis_client):
+    redis_client.set("c", "10")
+    assert redis_client.incrby("c", 5) == 15
+    assert redis_client.decrby("c", 3) == 12
+
+def test_incr_no_entero(redis_client):
+    redis_client.set("c", "hola")
+    import redis
+    try:
+        redis_client.incr("c")
+        assert False
+    except redis.ResponseError:
+        pass
 
 
     
