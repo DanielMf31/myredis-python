@@ -40,7 +40,7 @@ Español · [English](README.md)
 
 `myredis` se construyó en nueve fases incrementales. Cada fase añade una **capacidad de cara al usuario** y mantiene todo ejecutable y probado — nunca "el parser perfecto antes de tener nada corriendo", siempre un programa vivo que crece.
 
-![Fases de construcción](diagrams/phases.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/phases-dark.svg"><img alt="Fases de construcción" src="diagrams/phases.svg"></picture>
 
 | Fase | Capacidad | Comandos |
 |:---:|---|---|
@@ -63,7 +63,7 @@ Español · [English](README.md)
 
 Un event loop `asyncio` de un solo hilo atiende cada conexión.
 
-![Arquitectura](diagrams/architecture.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/architecture-dark.svg"><img alt="Arquitectura" src="diagrams/architecture.svg"></picture>
 
 | Módulo | Responsabilidad |
 |---|---|
@@ -78,7 +78,7 @@ Un event loop `asyncio` de un solo hilo atiende cada conexión.
 
 Cada comando sigue el mismo camino, de los bytes RESP crudos a una respuesta RESP:
 
-![Ciclo de vida de un comando](diagrams/command-lifecycle.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/command-lifecycle-dark.svg"><img alt="Ciclo de vida de un comando" src="diagrams/command-lifecycle.svg"></picture>
 
 ---
 
@@ -95,7 +95,7 @@ Lo que lo hace más que un juguete:
 
 La expiración de dos estrategias es la pieza más delicada — lazy para corrección, activa para liberar memoria:
 
-![Caducidad de claves](diagrams/expiration.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/expiration-dark.svg"><img alt="Caducidad de claves" src="diagrams/expiration.svg"></picture>
 
 ---
 

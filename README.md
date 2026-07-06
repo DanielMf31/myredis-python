@@ -40,7 +40,7 @@ English · [Español](README.es.md)
 
 `myredis` was built in nine incremental phases. Each phase adds a user-facing capability and keeps the whole thing runnable and tested — never "the perfect parser before anything works", always a living program that grows.
 
-![Build phases](diagrams/phases.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/phases-dark.svg"><img alt="Build phases" src="diagrams/phases.svg"></picture>
 
 | Phase | Capability | Commands |
 |:---:|---|---|
@@ -63,7 +63,7 @@ English · [Español](README.es.md)
 
 A single-threaded `asyncio` event loop handles every connection.
 
-![Architecture](diagrams/architecture.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/architecture-dark.svg"><img alt="Architecture" src="diagrams/architecture.svg"></picture>
 
 | Module | Responsibility |
 |---|---|
@@ -78,7 +78,7 @@ A single-threaded `asyncio` event loop handles every connection.
 
 Every command follows the same path, from raw RESP bytes to a RESP reply:
 
-![Command lifecycle](diagrams/command-lifecycle.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/command-lifecycle-dark.svg"><img alt="Command lifecycle" src="diagrams/command-lifecycle.svg"></picture>
 
 ---
 
@@ -95,7 +95,7 @@ The parts that make it more than a toy:
 
 The two-strategy expiration is the trickiest piece — lazy for correctness, active to reclaim memory:
 
-![Key expiration](diagrams/expiration.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="diagrams/expiration-dark.svg"><img alt="Key expiration" src="diagrams/expiration.svg"></picture>
 
 ---
 
