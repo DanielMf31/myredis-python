@@ -1,11 +1,11 @@
-// myredis — architecture: modules and data flow
+// myredis — architecture: modules and data flow (top to bottom)
 digraph architecture {
-  rankdir=LR;
+  rankdir=TB;
   splines=ortho;
   bgcolor="white";
   pad=0.4;
   nodesep=0.55;
-  ranksep=0.85;
+  ranksep=0.7;
   node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=15,
         color="#455a64", penwidth=1.5, margin="0.28,0.18"];
   edge [fontname="Helvetica", fontsize=12, color="#78909c"];
@@ -14,20 +14,16 @@ digraph architecture {
 
   subgraph cluster_myredis {
     label="myredis";
-    labeljust="l";
-    fontname="Helvetica";
-    fontsize=18;
-    style="rounded";
-    color="#b0bec5";
-    bgcolor="#fbfbfb";
+    labeljust="l"; fontname="Helvetica"; fontsize=18;
+    style="rounded"; color="#b0bec5"; bgcolor="#fbfbfb";
 
-    server   [label="server.py\n(asyncio TCP)",           fillcolor="#e3f2fd"];
-    parser   [label="protocol.py\nparser  (RESP -> args)", fillcolor="#e8f5e9"];
-    registry [label="commands.py\nregistry + dispatch",    fillcolor="#fff3e0"];
-    encoder  [label="protocol.py\nencoder (value -> RESP)",fillcolor="#e8f5e9"];
-    storage  [label="storage.py\nin-memory store",         shape=cylinder, fillcolor="#fce4ec"];
-    expir    [label="expiration.py\nlazy + active",        fillcolor="#f3e5f5"];
-    persist  [label="persistence.py\nRDB snapshot",        fillcolor="#f3e5f5"];
+    server   [label="server.py  (asyncio TCP)",       fillcolor="#e3f2fd"];
+    parser   [label="protocol.py  ·  parser (RESP -> args)", fillcolor="#e8f5e9"];
+    registry [label="commands.py  ·  registry + dispatch",   fillcolor="#fff3e0"];
+    storage  [label="storage.py  ·  in-memory store", shape=cylinder, fillcolor="#fce4ec"];
+    encoder  [label="protocol.py  ·  encoder (value -> RESP)", fillcolor="#e8f5e9"];
+    expir    [label="expiration.py\nlazy + active",   fillcolor="#f3e5f5"];
+    persist  [label="persistence.py\nRDB snapshot",   fillcolor="#f3e5f5"];
   }
 
   disk [label="dump.rdb", shape=note, fillcolor="#eceff1"];
@@ -37,8 +33,7 @@ digraph architecture {
   parser   -> registry [label="args"];
   registry -> storage  [label="get / set"];
   registry -> encoder  [label="result"];
-  encoder  -> client   [label="RESP2 reply"];
-
+  encoder  -> client   [label="RESP2 reply", constraint=false];
   expir    -> storage  [dir=both, style=dashed, label="expire"];
   persist  -> storage  [dir=both, style=dashed];
   persist  -> disk     [dir=both, style=dashed, label="save / load"];
