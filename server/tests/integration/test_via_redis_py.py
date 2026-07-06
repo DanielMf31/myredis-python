@@ -54,5 +54,23 @@ def test_incr_no_entero(redis_client):
     except redis.ResponseError:
         pass
 
+def test_rpush_lrange(redis_client):
+    redis_client.rpush("l", "a", "b", "c")
+    assert redis_client.lrange("l", 0, -1) == [b"a", b"b", b"c"]
 
-    
+def test_lpush_invierte(redis_client):
+    redis_client.lpush("l", "a", "b", "c")
+    assert redis_client.lrange("l", 0, -1) == [b"c", b"b", b"a"]
+
+def test_pop_y_llen(redis_client):
+    redis_client.rpush("l", "a", "b")
+    assert redis_client.lpop("l") == b"a"
+
+def test_wrongtype(redis_client):
+    redis_client.set("s", "soy string")
+    import redis
+    try:
+        redis_client.lpush("s", "x")
+        assert False
+    except redis.ResponseError:
+        pass

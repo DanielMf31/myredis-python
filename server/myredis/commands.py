@@ -3,6 +3,7 @@
 from typing import Any, Awaitable, Callable
 from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
+from collections import deque
 import time
 
 CommandHandler = Callable[[list], Awaitable[Any]]
@@ -16,12 +17,31 @@ def _to_bytes(value: Any) -> bytes:
         return str(value).encode()
     raise TypeError(f"cannot convert {type(value).__name__} to bytes")
 
+
+
 class CommandRegistry:
     def __init__(self, storage: Storage, expiration: ExpirationManager) -> None:
         self.storage = storage
         self.expiration = expiration
         self._handlers: dict[str, CommandHandler] = {}
         self._register_all()
+
+    def _get_list(self, key: bytes, create: bool = False):
+        self.expiration.check_and_expire(key)
+        value = self.storage.get(key)
+        if value is None:
+            if create:
+                d = deque()
+                self.storage.set(key, d)
+                return d
+            return None
+        if not isinstance(value, deque):
+            raise ValueError("WRONGTYPE Operation against a key holding the wrong kind of value")
+        return value
+    
+    def _drop_if_empty(self, key: bytes, d) -> None:
+        if len(d) == 0:
+            self.storage.delete(key)
 
     def register(self, name: str, handler: CommandHandler) -> None:
         self._handlers[name.upper()] = handler
@@ -39,6 +59,12 @@ class CommandRegistry:
         self.register("DECR", self.cmd_decr)
         self.register("INCRBY", self.cmd_incrby)
         self.register("DECRBY", self.cmd_decrby)
+        self.register("RPUSH", self.cmd_rpush)
+        self.register("LPUSH", self.cmd_lpush)
+        self.register("LPOP", self.cmd_lpop)
+        self.register("RPOP", self.cmd_rpop)
+        self.register("LLEN", self.cmd_llen)
+        self.register("LRANGE", self.cmd_lrange)
 
     async def execute(self, name: str, args: list) -> Any:
         handler = self._handlers.get(name)
@@ -201,4 +227,56 @@ class CommandRegistry:
         self._check_argc(args, 2, "decrby")
         return await self._incr_by(_to_bytes(args[0]), -int(_to_bytes(args[1])))
     
+    async def cmd_rpush(self, args: list) -> int:
+        self._check_argc_min(args, 2, "rpush")
+        key = _to_bytes(args[0])
+        d = self._get_list(key, create=True)
+        for v in args[1:]:
+            d.append(_to_bytes(v))
+        return len(d)
+    
+    async def cmd_lpush(self, args: int) -> int:
+        self._check_argc_min(args, 2, "lpush")
+        key = _to_bytes(args[0])
+        d = self._get_list(key, create=True)
+        for v in args[1:]:
+            d.appendleft(_to_bytes(v))
+        return len(d)
+    
+    async def cmd_lpop(self, args: list) -> Any:
+        self._check_argc(args, 1, "lpop")
+        key = _to_bytes(args[0])
+        d = self._get_list(key, create=True)
+        if d is None or len(d) == 0:
+            return None
+        v = d.popleft()
+        self._drop_if_empty(key, d)
+        return v
+    
+    async def cmd_rpop(self, args: list) -> Any:
+        self._check_argc(args, 1, "rpop")
+        key = _to_bytes(args[0])
+        d = self._get_list(key)
+        if d is None or len(d) == 0:
+            return None
+        v = d.pop()
+        self._drop_if_empty(key, d) 
+        return v
+
+    async def cmd_llen(self, args: list) -> int:
+        self._check_argc(args, 1, "llen")
+        d = self._get_list(_to_bytes(args[0]))
+        return len(d) if d is not None else 0
+    
+    async def cmd_lrange(self, args: list) -> list:
+        self._check_argc(args, 3, "lrange")
+        d = self._get_list(_to_bytes(args[0]))
+        if d is None:
+            return []
+        items = list(d)
+        start, stop = int((args[1])), int((args[2]))
+        n = len(items)
+        if start < 0: start = max(0, n + start)
+        if stop < 0: stop = n + stop
+        return items[start:stop + 1]
     
