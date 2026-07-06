@@ -1,0 +1,10 @@
+#!/bin/sh
+'''exec' /home/danielmf31/Documentos/Documentos_Trabajo/Ingenieria/Programacion/VSCode/Proyectos_personales/Obsidian_Prueba/50_Areas/Ingenieria/Programacion/Build_Things/06_build_your_own_redis_practica/.venv/bin/python3 "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+from pytest import console_main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(console_main())

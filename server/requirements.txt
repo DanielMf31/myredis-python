@@ -1,0 +1,11 @@
+# Mínimo absoluto. Filosofía: construir Redis desde 0, sin frameworks.
+
+# Solo para tests (cliente Redis oficial — para verificar compatibility)
+redis==5.2.0
+
+# Dev tools
+pytest==8.3.3
+pytest-asyncio==0.24.0
+ruff==0.6.9
+
+# NO hay frameworks de servidor. NO hay parsers RESP de terceros. Construimos todo.
