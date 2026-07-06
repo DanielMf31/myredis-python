@@ -1,21 +1,23 @@
 // myredis — key expiration: lazy (on access) + active (background sweep)
 digraph expiration {
   rankdir=TB;
+  splines=ortho;
   bgcolor="white";
-  pad=0.3;
-  compound=true;
-  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
-        color="#455a64", penwidth=1.2, margin="0.16,0.10"];
-  edge [fontname="Helvetica", fontsize=9, color="#78909c"];
+  pad=0.4;
+  nodesep=0.5;
+  ranksep=0.6;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14,
+        color="#455a64", penwidth=1.5, margin="0.26,0.16"];
+  edge [fontname="Helvetica", fontsize=12, color="#78909c"];
 
   key [label="key with a TTL", shape=cylinder, fillcolor="#fce4ec"];
 
   subgraph cluster_lazy {
-    label="Lazy — on access";
-    labeljust="l"; fontname="Helvetica"; fontsize=12;
+    label="Lazy  —  on access";
+    labeljust="l"; fontname="Helvetica"; fontsize=16;
     style="rounded"; color="#b0bec5"; bgcolor="#fbfbfb";
 
-    access [label="GET / TTL / …", fillcolor="#e3f2fd"];
+    access [label="GET / TTL / ...", fillcolor="#e3f2fd"];
     lcheck [label="expired?", shape=diamond, fillcolor="#fff3e0"];
     ldel   [label="delete\nreturn nil", fillcolor="#ffebee"];
     lret   [label="return value", fillcolor="#e8f5e9"];
@@ -26,8 +28,8 @@ digraph expiration {
   }
 
   subgraph cluster_active {
-    label="Active — background sweep (every 1s)";
-    labeljust="l"; fontname="Helvetica"; fontsize=12;
+    label="Active  —  background sweep (every 1s)";
+    labeljust="l"; fontname="Helvetica"; fontsize=16;
     style="rounded"; color="#b0bec5"; bgcolor="#fbfbfb";
 
     tick   [label="timer tick", fillcolor="#e3f2fd"];
