@@ -85,4 +85,4 @@ redis-cli -p 6380 INCRBY visitas 9 # -> (integer) 10
 F3 hecha → **Fase 4 (Listas)**, donde el valor deja de ser bytes y aparece un `deque`.
 
 ## Conexiones
-- `docs/fase-1-strings.md` · `PHASES.md` · `HULY_fase-3-issues.md`
+- `docs/fase-1-strings.md` · `PHASES.md` · `issues/fase-3.md`

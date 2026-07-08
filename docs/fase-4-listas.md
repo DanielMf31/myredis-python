@@ -125,4 +125,4 @@ redis-cli -p 6380 LRANGE cola 0 -1   # 1) "a" 2) "b" 3) "c"
 F4 → **Fase 5 (Hashes)**: mismo patrón pero el valor es un `dict` anidado.
 
 ## Conexiones
-- `docs/fase-1-strings.md` · `PHASES.md` · `HULY_fase-4-issues.md`
+- `docs/fase-1-strings.md` · `PHASES.md` · `issues/fase-4.md`

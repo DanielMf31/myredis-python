@@ -110,4 +110,4 @@ F7 → **Fase 8 (Pulido)**: INFO/DBSIZE/FLUSHDB/KEYS + benchmark vs Redis real. 
 La estimación de memoria es **aproximada** (Python no te da el tamaño exacto fácil). Redis real usa su propio allocator y lo sabe al byte. Aquí es una heurística — suficiente para el propósito educativo, pero anótalo: *"mi maxmemory es aproximado."*
 
 ## Conexiones
-- `docs/fase-1-strings.md` · `PHASES.md` · `HULY_fase-7-issues.md`
+- `docs/fase-1-strings.md` · `PHASES.md` · `issues/fase-7.md`

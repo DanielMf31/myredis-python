@@ -128,4 +128,4 @@ F6 → **Fase 7 (LRU eviction)**: cuando la memoria se llena, echar las claves m
 La **escritura atómica** (temp + `os.replace`) es el patrón que ya has visto 3 veces (organizador, Kafka, aquí). Grábatelo: *"para no corromper un fichero ante un crash, escribe a temp y renombra atómicamente."*
 
 ## Conexiones
-- `docs/fase-1-strings.md` · `PHASES.md` · `HULY_fase-6-issues.md` · [[disenar-funciones-y-programas]] (atomicidad)
+- `docs/fase-1-strings.md` · `PHASES.md` · `issues/fase-6.md` · [[disenar-funciones-y-programas]] (atomicidad)

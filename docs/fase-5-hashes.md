@@ -109,4 +109,4 @@ redis-cli -p 6380 HGETALL user:1
 F5 → **Fase 6 (Persistencia RDB)**: por fin los datos **sobreviven a un reinicio**. Aparece `persistence.py`.
 
 ## Conexiones
-- `docs/fase-4-listas.md` · `PHASES.md` · `HULY_fase-5-issues.md`
+- `docs/fase-4-listas.md` · `PHASES.md` · `issues/fase-5.md`

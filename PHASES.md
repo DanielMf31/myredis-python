@@ -31,7 +31,7 @@ Un server que habla **RESP2** y con el que el **`redis-cli` oficial** funciona s
 
 **Piezas:** `protocol.py` (encode + `RESPParser`) · `server.py` (recortado: `start`/`serve_forever`/`_handle_client`/`_dispatch`) · `commands.py` (registry + `cmd_ping`) · `__main__.py`. **NO** hacen falta `storage`/`config`/`expiration`/`persistence`/`eviction`.
 
-**Doc:** `docs/fase-0-walking-skeleton.md` · **Issues:** `HULY_fase-0-issues.md` (F0-1…F0-6).
+**Doc:** `docs/fase-0-walking-skeleton.md` · **Issues:** `docs/issues/fase-0.md` (F0-1…F0-6).
 
 **Hecho cuando:** `pytest tests/unit/test_protocol.py` verde + `redis-cli -p 6380 PING` → `PONG` + `pytest tests/integration/ -k ping` verde.
 
@@ -43,7 +43,7 @@ Un server que habla **RESP2** y con el que el **`redis-cli` oficial** funciona s
 
 **Piezas:** `storage.py` (nuevo: KV `get`/`set`/`delete`/`exists` sobre `OrderedDict`) · `commands.py` (+4 handlers + helpers `_to_bytes`/`_check_argc`, el registry ahora recibe el `storage`) · `server.py` (2 líneas: crear `Storage` y pasarlo). **Bonus:** DBSIZE/FLUSHDB/KEYS.
 
-**Doc:** `docs/fase-1-strings.md` · **Issues:** `HULY_fase-1-issues.md` (F1-1…F1-4).
+**Doc:** `docs/fase-1-strings.md` · **Issues:** `docs/issues/fase-1.md` (F1-1…F1-4).
 
 **Hecho cuando:** `pytest tests/unit` verde + `redis-cli SET/GET/DEL/EXISTS` funcionan + `pytest tests/integration -k "set or get or delete or exists"` verde.
 

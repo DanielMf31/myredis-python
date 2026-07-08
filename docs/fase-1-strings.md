@@ -268,4 +268,4 @@ Triviales sobre el `storage` que ya tienes:
 ## Conexiones
 - `docs/fase-0-walking-skeleton.md` — la base que esto reutiliza
 - [[disenar-funciones-y-programas]] — contratos + edge cases
-- `PHASES.md` — el mapa · `HULY_fase-1-issues.md` — los Issues
+- `PHASES.md` — el mapa · `issues/fase-1.md` — los Issues

@@ -104,4 +104,4 @@ Con F0–F8 tienes un **Redis-compatible completo**. Para el repo:
 F8 cierra el clon básico. **Fase 9 (Replicación)** es opcional y es tu entrada a **sistemas distribuidos** — merece su propia sesión.
 
 ## Conexiones
-- `PHASES.md` · `HULY_fase-8-issues.md` · [[chat-claude-2026-05-11-booking-clone-portfolio-leverage-4-dimensiones]] (estrategia portfolio)
+- `PHASES.md` · `issues/fase-8.md` · [[chat-claude-2026-05-11-booking-clone-portfolio-leverage-4-dimensiones]] (estrategia portfolio)

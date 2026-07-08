@@ -427,5 +427,5 @@ pytest tests/integration/ -k ping -v       # (4) ping() True
 
 ## Conexiones
 - [[disenar-funciones-y-programas]] — contratos + edge cases (lo has aplicado aquí)
-- `PHASES.md` — el mapa · `HULY_fase-0-issues.md` — los Issues
+- `PHASES.md` — el mapa · `issues/fase-0.md` — los Issues
 - Modelo: `../06_build_your_own_redis/docs/01-resp-protocol-explained.md` y `02-asyncio-tcp-server-patterns.md`

@@ -220,4 +220,4 @@ redis-cli -p 6380 TTL k        # -> (integer) -1
 F2 hecha → **Fase 3 (INCR/DECR)**. Edge case para tu bitácora: ¿qué devuelve `TTL` para una clave inexistente (`-2`) vs sin TTL (`-1`)? Esa distinción es sutil y cae en interviews.
 
 ## Conexiones
-- `docs/fase-1-strings.md` · `PHASES.md` · `HULY_fase-2-issues.md` · [[disenar-funciones-y-programas]]
+- `docs/fase-1-strings.md` · `PHASES.md` · `issues/fase-2.md` · [[disenar-funciones-y-programas]]

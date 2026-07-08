@@ -52,4 +52,4 @@ Esos tres —fallo parcial, consistencia, orden— son la esencia de sistemas di
 - Tu propio [[catalogo-byox-infra]]: Raft es el siguiente escalón natural (consenso para resolver el split-brain).
 
 ## Conexiones
-- `PHASES.md` · `HULY_fase-9-issues.md` · [[disenar-funciones-y-programas]] (edge cases) · [[catalogo-byox-infra]] (Raft) · [[MOC_CS_Fundamentos]] (sistemas distribuidos)
+- `PHASES.md` · `issues/fase-9.md` · [[disenar-funciones-y-programas]] (edge cases) · [[catalogo-byox-infra]] (Raft) · [[MOC_CS_Fundamentos]] (sistemas distribuidos)

@@ -8,6 +8,16 @@ class Storage:
         self._data: "OrderedDict[bytes, Any]" = OrderedDict()
         self._expirations: dict[bytes, float] = {}
 
+    def snapshot(self) -> dict:
+        """Foto del estado para persistir"""
+        return {"data": dict(self._data), "expirations": dict(self._expirations)}
+    
+    def restore(self, snap: dict) -> None:
+        """Recarga el estado desde una foto."""
+        from collections import OrderedDict
+        self._data = OrderedDict(snap.get("data", {}))
+        self._expirations = dict(snap.get("expirations", {}))
+
     def set(self, key: bytes, value: Any) -> None:
         self._data[key] = value
         self._data.move_to_end(key)
