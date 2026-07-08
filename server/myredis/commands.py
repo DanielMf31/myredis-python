@@ -3,7 +3,9 @@
 from typing import Any, Awaitable, Callable
 from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
+from myredis.persistence import Persistence
 from collections import deque
+import asyncio
 import time
 
 CommandHandler = Callable[[list], Awaitable[Any]]
@@ -20,8 +22,9 @@ def _to_bytes(value: Any) -> bytes:
 
 
 class CommandRegistry:
-    def __init__(self, storage: Storage, expiration: ExpirationManager) -> None:
+    def __init__(self, storage: Storage, expiration: ExpirationManager, persistence: Persistence) -> None:
         self.storage = storage
+        self.persistence = persistence
         self.expiration = expiration
         self._handlers: dict[str, CommandHandler] = {}
         self._register_all()
@@ -84,6 +87,8 @@ class CommandRegistry:
         self.register("HKEYS", self.cmd_hkeys)
         self.register("HGETALL", self.cmd_hgetall)
         self.register("HLEN", self.cmd_hlen)
+        self.register("SAVE", self.cmd_save)
+        self.register("BGSAVE", self.cmd_bgsave)
 
     async def execute(self, name: str, args: list) -> Any:
         handler = self._handlers.get(name)
@@ -353,3 +358,11 @@ class CommandRegistry:
       self._check_argc(args, 1, "hlen")
       h = self._get_hash(_to_bytes(args[0]))
       return len(h) if h is not None else 0
+    
+    async def cmd_save(self, args):
+        await self.persistence.save()
+        return "OK"
+
+    async def cmd_bgsave(self, args):
+        asyncio.create_task(self.persistence.save())   # no espera
+        return "Background saving started"
