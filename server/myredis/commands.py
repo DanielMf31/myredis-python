@@ -24,8 +24,8 @@ def _to_bytes(value: Any) -> bytes:
 class CommandRegistry:
     def __init__(self, storage: Storage, expiration: ExpirationManager, persistence: Persistence) -> None:
         self.storage = storage
-        self.persistence = persistence
         self.expiration = expiration
+        self.persistence = persistence
         self._handlers: dict[str, CommandHandler] = {}
         self._register_all()
 

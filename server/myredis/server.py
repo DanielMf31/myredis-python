@@ -14,7 +14,7 @@ class RedisServer:
         self.storage = Storage()
         self.persistence = Persistence(self.storage, path="dump.rdb")
         self.expiration = ExpirationManager(self.storage)
-        self.commands = CommandRegistry(self.storage, self.expiration)
+        self.commands = CommandRegistry(self.storage, self.expiration, self.persistence)
         self._server: asyncio.AbstractServer | None = None
         self._tasks: set = set()
 
