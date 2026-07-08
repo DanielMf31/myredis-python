@@ -1,7 +1,6 @@
 # Fase 5 — Hashes: HSET / HGET / HDEL / HKEYS / HGETALL
 
-> **Meta:** el **tercer tipo de dato**. Una clave puede guardar un **hash** (un `dict` de campo→valor), como un objeto. Mismo patrón que las listas (F4): helper de tipo + WRONGTYPE + auto-borrado.
->
+> **Meta:** el **tercer tipo de dato**. Una clave puede guardar un **hash** (un `dict` de campo→valor), como un objeto. Mismo patrón que las listas (F4): helper de tipo + WRONGTYPE + auto-borrado.>
 > **Prerrequisito:** Fase 4 (reusas el patrón). Tocas `commands.py`.
 
 ## 1. Concepto

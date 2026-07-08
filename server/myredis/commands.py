@@ -39,6 +39,19 @@ class CommandRegistry:
             raise ValueError("WRONGTYPE Operation against a key holding the wrong kind of value")
         return value
     
+    def _get_hash(self, key: bytes, create: bool = False):
+        self.expiration.check_and_expire(key)
+        value = self.storage.get(key)
+        if value is None:
+            if create:
+                h = {}
+                self.storage.set(key, h)
+                return h
+            return None
+        if not isinstance(value, dict):
+            raise ValueError("WRONGTYPE Operation agains a key holding the wrong kind of value")
+        return value
+    
     def _drop_if_empty(self, key: bytes, d) -> None:
         if len(d) == 0:
             self.storage.delete(key)
@@ -65,6 +78,12 @@ class CommandRegistry:
         self.register("RPOP", self.cmd_rpop)
         self.register("LLEN", self.cmd_llen)
         self.register("LRANGE", self.cmd_lrange)
+        self.register("HSET", self.cmd_hset)
+        self.register("HGET", self.cmd_hget)
+        self.register("HDEL", self.cmd_hdel)
+        self.register("HKEYS", self.cmd_hkeys)
+        self.register("HGETALL", self.cmd_hgetall)
+        self.register("HLEN", self.cmd_hlen)
 
     async def execute(self, name: str, args: list) -> Any:
         handler = self._handlers.get(name)
@@ -280,3 +299,57 @@ class CommandRegistry:
         if stop < 0: stop = n + stop
         return items[start:stop + 1]
     
+    async def cmd_hset(self, args: list):
+        self._check_argc_min(args, 3, "hset")
+        key = _to_bytes(args[0])
+        h = self._get_hash(key, create=True)
+        pares = args[1:]
+        nuevos = 0
+        for i in range(0, len(pares) -1, 2):
+            field, value = _to_bytes(pares[i]), _to_bytes(pares[i + 1])
+            if field not in h:
+                nuevos += 1
+            h[field] = value
+        return nuevos
+        
+    async def cmd_hget(self, args: list):
+        self._check_argc(args, 2, "hget")
+        h = self._get_hash(_to_bytes(args[0]))
+        if h is None:
+            return None
+        return h.get(_to_bytes(args[1]))
+    
+    async def cmd_hdel(self, args: list):
+        self._check_argc_min(args, 2, "hdel")
+        key = _to_bytes(args[0])
+        h = self._get_hash(key)
+        if h is None:
+            return 0
+        borrados = 0
+        for f in args[1:]:
+            if h.pop(_to_bytes(f), None) is not None:
+                borrados += 1
+        if len(h) == 0:
+            self.storage.delete(key)
+        return borrados
+        
+    async def cmd_hkeys(self, args: list):
+        self._check_argc(args, 1, "hkeys")
+        h = self._get_hash(_to_bytes(args[0]))
+        return list(h.keys()) if h is not None else []
+    
+    async def cmd_hgetall(self, args: list):
+        self._check_argc(args, 1, "hgetall")
+        h = self._get_hash(_to_bytes(args[0]))
+        if h is None:
+            return []
+        out = []
+        for f, v in h.items():
+            out.append(f)
+            out.append(v)
+        return out
+    
+    async def cmd_hlen(self, args: list):
+      self._check_argc(args, 1, "hlen")
+      h = self._get_hash(_to_bytes(args[0]))
+      return len(h) if h is not None else 0

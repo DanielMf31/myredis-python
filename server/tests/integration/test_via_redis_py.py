@@ -74,3 +74,19 @@ def test_wrongtype(redis_client):
         assert False
     except redis.ResponseError:
         pass
+
+def test_hset_hget(redis_client):
+    redis_client.hset("u", mapping={"name": "Ana", "age": "30"})
+    assert redis_client.hget("u", "name") == b"Ana"
+    assert redis_client.hlen("u") == 2 if hasattr(redis_client, "hlen") else True
+
+def test_hgetall(redis_client):
+    redis_client.hset("u", mapping={"a": "1", "b": "2"})
+    assert redis_client.hgetall("u") == {b"a": b"1", b"b": b"2"}
+
+def test_hdel(redis_client):
+    redis_client.hset("u", mapping={"a": "1", "b": "2"})
+    assert redis_client.hdel("u", "a") == 1
+    assert redis_client.hkeys("u") == [b"b"]
+
+    
