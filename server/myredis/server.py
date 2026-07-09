@@ -6,15 +6,17 @@ from myredis.commands import CommandRegistry
 from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
 from myredis.persistence import Persistence
+from myredis.eviction import EvictionManager
 
 class RedisServer:
-    def __init__(self, host: str = "0.0.0.0", port: int = 6380) -> None:
+    def __init__(self, host: str = "0.0.0.0", port: int = 6380, maxmemory: int = 0) -> None:
         self.host = host
         self.port = port
         self.storage = Storage()
+        self.eviction = EvictionManager(self.storage, maxmemory)
         self.persistence = Persistence(self.storage, path="dump.rdb")
         self.expiration = ExpirationManager(self.storage)
-        self.commands = CommandRegistry(self.storage, self.expiration, self.persistence)
+        self.commands = CommandRegistry(self.storage, self.expiration, self.persistence, self.eviction)
         self._server: asyncio.AbstractServer | None = None
         self._tasks: set = set()
 

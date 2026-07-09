@@ -4,9 +4,15 @@ from typing import Any, Awaitable, Callable
 from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
 from myredis.persistence import Persistence
+from myredis.eviction import EvictionManager
 from collections import deque
 import asyncio
 import time
+
+WRITE_COMMANDS = {"SET", "DEL", "EXPIRE", "PERSIST", "INCR", 
+                  "DECR", "INCRBY", "DECRBY", "RPUSH", 
+                  "LPUSH", "LPOP", "RPOP", "HSET", "HDEL",}
+
 
 CommandHandler = Callable[[list], Awaitable[Any]]
 
@@ -22,10 +28,11 @@ def _to_bytes(value: Any) -> bytes:
 
 
 class CommandRegistry:
-    def __init__(self, storage: Storage, expiration: ExpirationManager, persistence: Persistence) -> None:
+    def __init__(self, storage: Storage, expiration: ExpirationManager, persistence: Persistence, eviction: EvictionManager) -> None:
         self.storage = storage
         self.expiration = expiration
         self.persistence = persistence
+        self.eviction = eviction
         self._handlers: dict[str, CommandHandler] = {}
         self._register_all()
 
@@ -95,9 +102,12 @@ class CommandRegistry:
         if handler is None:
             return Exception(f"ERR uknow command '{name}'")
         try:
-            return await handler(args)
+            result = await handler(args)
         except ValueError as e:
             return Exception(str(e))
+        if name in WRITE_COMMANDS:
+            self.eviction.maybe_evict()
+        return result
         
     @staticmethod
     def _check_argc(args: list, expected: int, cmd: str) -> None:
