@@ -44,6 +44,8 @@ def test_type(myredis_server):
 
 def test_info(myredis_server):
     with myredis_server() as c:
-        raw = c.execute_command("INFO")
-        assert b"role:master" in raw
-        assert b"redis_version" in raw
+        # redis-py parsea la respuesta de INFO a un dict (que lo consiga ya prueba
+        # que el formato "clave:valor" por secciones es correcto).
+        info = c.execute_command("INFO")
+        assert info["role"] == "master"
+        assert "redis_version" in info

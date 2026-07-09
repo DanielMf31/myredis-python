@@ -8,10 +8,12 @@ from myredis.eviction import EvictionManager
 from collections import deque
 import asyncio
 import time
+import fnmatch
 
 WRITE_COMMANDS = {"SET", "DEL", "EXPIRE", "PERSIST", "INCR", 
                   "DECR", "INCRBY", "DECRBY", "RPUSH", 
-                  "LPUSH", "LPOP", "RPOP", "HSET", "HDEL",}
+                  "LPUSH", "LPOP", "RPOP", "HSET", "HDEL",
+                  "FLUSHDB", "FLUSHALL"}
 
 
 CommandHandler = Callable[[list], Awaitable[Any]]
@@ -96,6 +98,15 @@ class CommandRegistry:
         self.register("HLEN", self.cmd_hlen)
         self.register("SAVE", self.cmd_save)
         self.register("BGSAVE", self.cmd_bgsave)
+        self.register("DBSIZE", self.cmd_dbsize)
+        self.register("FLUSHDB", self.cmd_flushdb)
+        self.register("FLUSHALL", self.cmd_flushall)
+        self.register("KEYS", self.cmd_keys)
+        self.register("TYPE", self.cmd_type)
+        self.register("ECHO", self.cmd_echo)
+        self.register("INFO", self.cmd_info)
+        self.register("COMMAND", self.cmd_command)
+        
 
     async def execute(self, name: str, args: list) -> Any:
         handler = self._handlers.get(name)
@@ -376,3 +387,43 @@ class CommandRegistry:
     async def cmd_bgsave(self, args):
         asyncio.create_task(self.persistence.save())   # no espera
         return "Background saving started"
+
+    async def cmd_dbsize(self, args: list) -> Any:
+        self._check_argc(args, 0, "dbsize")
+        return self.storage.dbsize()
+    
+    async def cmd_flushdb(self, args: list) -> Any:
+        self.storage.flush()
+        return "OK"
+    
+    async def cmd_flushall(self, args: list) -> Any:
+        self.storage.flush()
+        return "OK"
+    
+    async def cmd_keys(self, args: list) -> Any:
+        self._check_argc(args, 1, "keys")
+        pat = _to_bytes(args[0])
+        return [k for k in self.storage.keys() if fnmatch.fnmatchcase(k, pat)]
+    
+    async def cmd_type(self, args: list) -> Any:
+        self._check_argc(args, 1, "type")
+        key = _to_bytes(args[0])
+        self.expiration.check_and_expire(key)
+        return self.storage.type_of(key)
+    
+    async def cmd_echo(self, args: list) -> Any:
+        self._check_argc(args, 1, "echo")
+        return _to_bytes(args[0])
+    
+    async def cmd_info(self, args: list) -> Any:
+        lines = [
+            "# Server", "redis_version:myredis-0.8", "",
+            "# Memory", f"used_memory:{self.storage.memory_usage()}", "",
+            "# Keyspace", f"db0:keys={self.storage.dbsize()},expires=0", "",
+            "# Replication", "role:master",
+        ]
+        return "\r\n".join(lines).encode()
+    
+    async def cmd_command(self, args: list) -> Any:
+        return []
+    

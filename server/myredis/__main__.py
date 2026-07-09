@@ -5,14 +5,11 @@ import os
 
 from myredis.server import RedisServer
 from myredis.eviction import parse_memory
+from myredis.config import Config
 
 async def main() -> None:
-    host = os.environ.get("MYREDIS_HOST", "0.0.0.0")
-    port = int(os.environ.get("MYREDIS_PORT", "6380"))
-    max_mem = parse_memory(os.environ.get("MYREDIS_MAXMEMORY", "0"))
-    server = RedisServer(host, port, max_mem)
-    await server.start()
-    await server.server_forever()
+   
+    await RedisServer(Config.from_env()).start()
 
 if __name__ == "__main__":
     try:

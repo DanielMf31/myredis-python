@@ -7,23 +7,25 @@ from myredis.storage import Storage
 from myredis.expiration import ExpirationManager
 from myredis.persistence import Persistence
 from myredis.eviction import EvictionManager
+from myredis.config import Config
 
 class RedisServer:
-    def __init__(self, host: str = "0.0.0.0", port: int = 6380, maxmemory: int = 0) -> None:
-        self.host = host
-        self.port = port
+    def __init__(self, config: Config) -> None:
+        
+        self.config = config
         self.storage = Storage()
-        self.eviction = EvictionManager(self.storage, maxmemory)
-        self.persistence = Persistence(self.storage, path="dump.rdb")
+        self.eviction = EvictionManager(self.storage, config.maxmemory)
+        self.persistence = Persistence(self.storage, path=config.dbfilename)
         self.expiration = ExpirationManager(self.storage)
         self.commands = CommandRegistry(self.storage, self.expiration, self.persistence, self.eviction)
+        
         self._server: asyncio.AbstractServer | None = None
         self._tasks: set = set()
 
 
     async def start(self) -> None:
         self.persistence.load()
-        self._server = await asyncio.start_server(self._handle_client, self.host, self.port)
+        self._server = await asyncio.start_server(self._handle_client, self.config.host, self.config.port)
         self._spawn(self._snapshot_loop())
         addr = self._server.sockets[0].getsockname()
         print(f"myredis escuchando en {addr}")

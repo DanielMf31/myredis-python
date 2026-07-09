@@ -9,6 +9,26 @@ class Storage:
         self._expirations: dict[bytes, float] = {}
         self._bytes = 0
 
+    def keys(self) -> list[bytes]:
+        return list(self._data.keys())
+    
+    def flush(self) -> None:
+        self._data.clear()
+        self._expirations.clear()
+        self._bytes = 0
+
+    def type_of(self, key: bytes) -> str:
+        if key not in self._data:
+            return "none"
+        v = self._data[key]
+        if isinstance(v, bytes):
+            return "string"
+        if isinstance(v, deque):
+            return "list"
+        if isinstance(v, dict):
+            return "hash"
+        return "none"
+    
     @staticmethod
     def _sizeof(value) -> int:
         """Estimación barata del tamaño en bytes de un valor"""
